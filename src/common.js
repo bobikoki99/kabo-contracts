@@ -9,7 +9,8 @@ export const MESSAGES = Object.freeze({
     TERMS_REQUIRED: 'Необходимо е да приемете Общите условия.',
     INVALID_CHOICE: 'Изберете една от възможностите.',
     CART_EMPTY: 'Количката е празна.',
-    INVALID_CART_ITEM: 'Невалиден продукт в количката.'
+    INVALID_CART_ITEM: 'Невалиден продукт в количката.',
+    INVALID_ID: 'Невалиден идентификатор.'
 });
 
 export const MAX_TEXT_LENGTH = 300;
@@ -49,4 +50,4 @@ export const econtId = z
     .optional()
     .transform(value => (Number(value) > 0 ? Number(value) : null));
 
-export const mongoId = z.string().regex(MONGO_ID_REGEX);
+export const mongoId = z.string().regex(MONGO_ID_REGEX, MESSAGES.INVALID_ID);

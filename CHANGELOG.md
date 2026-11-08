@@ -9,6 +9,7 @@
   `errorResponseSchema`.
 - `fillPath(path, params)` turns `/products/:productId` into a URL.
 - `getProducts` takes an optional `category` query; `searchCities` limits `searchTerm` to 1–50 characters.
+- Bulgarian messages for an invalid id (`MESSAGES.INVALID_ID`) and an unknown category.
 
 ## 1.0.3 – 2026-11-08
 

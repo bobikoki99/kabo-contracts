@@ -48,7 +48,7 @@ describe('inputs the backend checks', () => {
     });
 
     test('invalid inputs are rejected', () => {
-        expect(endpoints.getProduct.params.safeParse({ productId: 'nope' }).success).toBe(false);
+        expect(endpoints.getProduct.params.safeParse({ productId: 'nope' }).error.issues[0].message).toBe('Невалиден идентификатор.');
         expect(endpoints.searchCities.query.safeParse({ searchTerm: '' }).success).toBe(false);
         expect(endpoints.searchCities.query.safeParse({ searchTerm: 'x'.repeat(51) }).success).toBe(false);
         expect(endpoints.getProducts.query.safeParse({ category: 'shoes' }).success).toBe(false);

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { mongoId } from './common.js';
+import { mongoId, MESSAGES } from './common.js';
 import { PRODUCT_CATEGORY } from './enums.js';
 import { productSchema } from './product.js';
 import { createOrderSchema, orderSchema } from './order.js';
@@ -19,7 +19,7 @@ export const endpoints = Object.freeze({
     getProducts: {
         method: 'GET',
         path: '/products',
-        query: z.object({ category: z.enum(Object.values(PRODUCT_CATEGORY)).optional() }),
+        query: z.object({ category: z.enum(Object.values(PRODUCT_CATEGORY), { error: MESSAGES.INVALID_CHOICE }).optional() }),
         response: z.object({ products: z.array(productSchema) })
     },
     getProduct: {
