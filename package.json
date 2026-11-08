@@ -1,8 +1,18 @@
 {
-  "name": "@kabo/contracts",
-  "version": "1.0.2",
-  "private": true,
+  "name": "kabo-contracts",
+  "version": "1.0.3",
   "description": "Data contracts shared by the Kabo frontend and backend: zod schemas and enums",
+  "keywords": [
+    "kabo",
+    "zod",
+    "contracts"
+  ],
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobikoki99/kabo-contracts.git"
+  },
+  "homepage": "https://github.com/bobikoki99/kabo-contracts#readme",
   "type": "module",
   "exports": "./src/index.js",
   "files": [
@@ -10,6 +20,9 @@
   ],
   "engines": {
     "node": ">=20.19"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "test": "vitest run"

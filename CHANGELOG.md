@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3 – 2026-11-08
+
+- Published on npmjs.com as `kabo-contracts` (install as `@kabo/contracts` via `npm:kabo-contracts@^1.0.3`); a GitHub Action publishes every version tag. No schema changes.
+
 ## 1.0.2 – 2026-11-08
 
 - Fix: Econt ids (`city`, `office`, `invoiceDetails.city`) accept `null`, so a parsed checkout can be parsed again. The form submits parsed values and the API rejected an unchosen office or invoice city.

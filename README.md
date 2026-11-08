@@ -1,4 +1,4 @@
-# @kabo/contracts
+# kabo-contracts
 
 The data contracts shared by `kabobee-frontend` and `kabobee-backend`: [zod](https://zod.dev) schemas
 and enums, in plain JavaScript. A rule written here is enforced in the browser (form errors) **and**
@@ -21,17 +21,20 @@ Econt calls (→ backend), secrets, environment config.
 
 ## Install
 
-From a Git tag, no registry needed:
+Published on npmjs.com as [`kabo-contracts`](https://www.npmjs.com/package/kabo-contracts); no login needed.
+Install it under the name the code imports, `@kabo/contracts`, with an npm alias:
 
 ```bash
-npm install github:bobikoki99/kabo-contracts#v1.0.0
+npm install @kabo/contracts@npm:kabo-contracts@^1.0.3
 ```
 
 ```json
-"dependencies": { "@kabo/contracts": "github:bobikoki99/kabo-contracts#v1.0.0" }
+"dependencies": { "@kabo/contracts": "npm:kabo-contracts@^1.0.3" }
 ```
 
-Plain ES modules, no build step. The backend (CommonJS) can `require()` it on Node ≥ 20.19.
+`^1.0.3` takes new patch and minor versions on the next `npm update`; a major version (breaking
+change) needs an explicit bump. Plain ES modules, no build step. The backend (CommonJS) can
+`require()` it on Node ≥ 20.19.
 
 ## Use
 
@@ -71,13 +74,21 @@ Editor types without TypeScript (VS Code reads JSDoc):
 
 1. Edit the schema and its test in `test/`; `npm test`.
 2. Bump `version` in `package.json`, add a line to `CHANGELOG.md`, commit, `git tag vX.Y.Z`, push with tags.
-3. Update the tag in the **backend first**, then the frontend.
+   The **Publish to npm** GitHub Action tests and publishes it (the tag must equal the version).
+3. `npm update @kabo/contracts` in the **backend first**, then the frontend (for a major version,
+   change the range in `package.json`, e.g. `npm:kabo-contracts@^2.0.0`).
 
 | Change | Version | Example |
 |---|---|---|
 | Message text, bug fix | patch `1.0.1` | typo in an error message |
 | New optional field, new enum value | minor `1.1.0` | `orders.store` |
 | Field renamed, removed or newly required; enum value changed | major `2.0.0` | `phoneNumber` → `phone` – deploy backend before frontend |
+
+## Publishing setup (once)
+
+The workflow `.github/workflows/publish.yml` needs the repository secret `NPM_TOKEN`: an npm
+*granular access token* with read and write permission for packages, created on npmjs.com under
+Access Tokens. Nobody needs to log in to npm locally.
 
 ## Develop
 
