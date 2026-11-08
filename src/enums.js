@@ -35,3 +35,16 @@ export const PRODUCT_AUDIENCE = Object.freeze({
 export const CURRENCY = 'EUR';
 
 export const MAX_ITEM_QUANTITY = 99;
+
+// Which storefront an article belongs to (articles.site)
+export const SITE = Object.freeze({
+    EQUIPMENT: 'equipment',
+    HONEY: 'honey'
+});
+
+// Image types the admin can upload (POST /admin/images)
+export const IMAGE_CONTENT_TYPE = Object.freeze({
+    JPEG: 'image/jpeg',
+    PNG: 'image/png',
+    WEBP: 'image/webp'
+});
