@@ -35,7 +35,7 @@ describe('messages', () => {
         expect(createMessageSchema.parse(message).type).toBe(MESSAGE_TYPE.CONTACT);
         expect(createMessageSchema.safeParse({ ...message, type: 'wholesale' }).success).toBe(false);
         expect(createMessageSchema.parse({ ...message, type: 'wholesale', company: 'Магазин' }).company).toBe('Магазин');
-        expect(createMessageSchema.safeParse({ ...message, type: 'spam' }).success).toBe(false);
+        expect(createMessageSchema.safeParse({ ...message, type: 'spam' }).error.issues[0].message).toBe(MESSAGES.INVALID_CHOICE);
     });
 });
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 – 2026-11-08
+
+- Unknown message `type` now gets the Bulgarian "Изберете една от възможностите." instead of zod's English default.
+
 ## 1.0.0 – 2026-11-08
 
 First version, taken from the rules in kabobee-frontend (`CheckoutPage`, `ContactsPage`,

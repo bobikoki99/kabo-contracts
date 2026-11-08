@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { requiredText, requiredEmail, optionalText, optionalPhoneNumber } from './common.js';
+import { MESSAGES, requiredText, requiredEmail, optionalText, optionalPhoneNumber } from './common.js';
 import { MESSAGE_TYPE } from './enums.js';
 
 const contactFields = {
@@ -24,7 +24,7 @@ export const createMessageSchema = z.preprocess(
     z.discriminatedUnion('type', [
         contactMessageSchema.extend({ type: z.literal(MESSAGE_TYPE.CONTACT) }),
         wholesaleMessageSchema.extend({ type: z.literal(MESSAGE_TYPE.WHOLESALE) })
-    ])
+    ], { error: MESSAGES.INVALID_CHOICE })
 );
 
 /** @typedef {import('zod').infer<typeof contactMessageSchema>} ContactMessage */
