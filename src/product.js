@@ -11,9 +11,9 @@ export const productInputSchema = z.object({
     category: z.enum(Object.values(PRODUCT_CATEGORY)),
     name: z.string().min(1),
     tagline: z.string().default(''),
-    price: z.number().positive(),           // EUR incl. VAT
-    weight: z.number().positive(),          // kg incl. packaging, used for Econt prices
-    sortOrder: z.number().int(),
+    price: z.number({ error: 'Въведете цена.' }).positive({ error: 'Цената трябва да е положително число.' }),   // EUR incl. VAT
+    weight: z.number({ error: 'Въведете тегло.' }).positive({ error: 'Теглото трябва да е положително число.' }),   // kg incl. packaging, used for Econt prices
+    sortOrder: z.number({ error: 'Въведете число.' }).int({ error: 'Въведете цяло число.' }),
     specs: z.record(z.string(), z.string()).default({}),
     highlights: z.array(z.string()).default([]),
     briefSummary: z.string().default(''),
