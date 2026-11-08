@@ -43,8 +43,9 @@ export const optionalPhoneNumber = (max = MAX_TEXT_LENGTH) => optionalText(max)
 
 // Econt city and office ids: numbers, but forms hold them as '' until chosen.
 // Anything that is not a positive number becomes null, so "required" can be checked separately.
+// null is accepted as input too, so the parsed output can be parsed again (form → API).
 export const econtId = z
-    .union([z.number(), z.string()])
+    .union([z.number(), z.string(), z.null()])
     .optional()
     .transform(value => (Number(value) > 0 ? Number(value) : null));
 

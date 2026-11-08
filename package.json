@@ -1,6 +1,6 @@
 {
   "name": "@kabo/contracts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Data contracts shared by the Kabo frontend and backend: zod schemas and enums",
   "type": "module",

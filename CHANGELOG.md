@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 – 2026-11-08
+
+- Fix: Econt ids (`city`, `office`, `invoiceDetails.city`) accept `null`, so a parsed checkout can be parsed again. The form submits parsed values and the API rejected an unchosen office or invoice city.
+- Tests: every request schema's output must parse again to the same value.
+
 ## 1.0.1 – 2026-11-08
 
 - Unknown message `type` now gets the Bulgarian "Изберете една от възможностите." instead of zod's English default.
