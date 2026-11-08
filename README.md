@@ -86,9 +86,13 @@ Editor types without TypeScript (VS Code reads JSDoc):
 
 ## Publishing setup (once)
 
-The workflow `.github/workflows/publish.yml` needs the repository secret `NPM_TOKEN`: an npm
-*granular access token* with read and write permission for packages, created on npmjs.com under
-Access Tokens. Nobody needs to log in to npm locally.
+Releases are published by `.github/workflows/publish.yml` with npm **trusted publishing**: no token,
+nothing expires. Configured on npmjs.com → kabo-contracts → Settings → Trusted Publisher →
+GitHub Actions (`bobikoki99` / `kabo-contracts` / `publish.yml`), with publishing access set to
+"Require two-factor authentication and disallow tokens". Nobody needs to log in to npm locally.
+
+The very first version was published with a 7-day token in the `NPM_TOKEN` secret, because trusted
+publishing can only be enabled for a package that already exists; that secret is deleted afterwards.
 
 ## Develop
 

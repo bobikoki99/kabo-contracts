@@ -1,5 +1,6 @@
 # Publishes kabo-contracts to npmjs.com when a version tag (v1.2.3) is pushed.
-# Needs the repository secret NPM_TOKEN (npm granular access token with publish rights).
+# Authentication: npm trusted publishing (OIDC, no token) once it is set up on npmjs.com for
+# bobikoki99/kabo-contracts + publish.yml. Until then the NPM_TOKEN secret is used (first publish only).
 name: Publish to npm
 
 on:
@@ -8,7 +9,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write   # npm provenance: the npm page links the package to this exact commit
+  id-token: write   # trusted publishing + provenance (the npm page links the package to this commit)
 
 jobs:
   publish:
@@ -21,12 +22,14 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
 
+      - run: npm install -g npm@latest   # trusted publishing needs npm 11.5.1 or newer
+
       - run: npm ci
       - run: npm test
 
       - name: Tag must match package.json version
         run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
 
-      - run: npm publish --provenance --access public
+      - run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}   # ignored once trusted publishing works; delete the secret then
