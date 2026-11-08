@@ -1,0 +1,23 @@
+{
+  "name": "@kabo/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Data contracts shared by the Kabo frontend and backend: zod schemas and enums",
+  "type": "module",
+  "exports": "./src/index.js",
+  "files": [
+    "src"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "vitest": "^5.1.0"
+  }
+}

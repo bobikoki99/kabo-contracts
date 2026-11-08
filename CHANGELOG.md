@@ -1,0 +1,14 @@
+# Changelog
+
+## 1.0.0 – 2026-11-08
+
+First version, taken from the rules in kabobee-frontend (`CheckoutPage`, `ContactsPage`,
+`ForResellersPage`, `utils/formValidations.js`) and kabobee-backend (`ordersService`, `messagesService`,
+`cartService`, `orderConstants`). Where the two disagreed, the contract settles it:
+
+- Order phone number must be a Bulgarian number on both sides (the backend accepted any text).
+- Office delivery needs office id, code and name; the error is reported on `office`.
+- Wholesale inquiries require `company` (the backend did not).
+- Message field limits from the backend (name 100, email 200, phone 30, company 150, city 100, message 5000) now apply in the forms too.
+- "Required" message spelled correctly ("задължително"); server errors are the same Bulgarian texts as the forms.
+- `PRODUCT_CATEGORY` (`sublimator`, `honey`) added for the multi-store setup.
