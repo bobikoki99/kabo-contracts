@@ -14,6 +14,8 @@ on the server (400 responses) with the same Bulgarian message.
 | `src/cart.js` | `cartItemSchema`, `cartItemsSchema`, `deliveryPriceRequestSchema` (`POST /econt/delivery/price`) | API |
 | `src/message.js` | `contactMessageSchema`, `wholesaleMessageSchema` (forms), `createMessageSchema` (`POST /messages`) | form / API |
 | `src/product.js` | `productInputSchema` (seed script), `productSchema` (`GET /products`) | both |
+| `src/econt.js` | `citySchema`, `econtOfficeSchema`, `deliveryPricesSchema` (responses) | both |
+| `src/endpoints.js` | **`endpoints`** – every backend endpoint: method, path, input and response schemas; `errorResponseSchema`, `fillPath` | both |
 
 **Belongs here:** request bodies, response shapes and values that both sides must read the same way.
 **Does not:** React or UI code (→ `@kabo/shared` in the frontend), business logic such as prices or
@@ -62,6 +64,27 @@ Editor types without TypeScript (VS Code reads JSDoc):
 ```js
 /** @param {import('@kabo/contracts').CreateOrder} order */
 ```
+
+### Endpoints: one description, both sides built from it
+
+```js
+endpoints.createOrder = {
+    method: 'POST', path: '/orders',
+    body: createOrderSchema,     // checked by the checkout form and by the backend
+    response: orderSchema        // checked by backend tests and, in development, by the frontend
+};
+```
+
+- **Backend**: routes are registered from the description (`contractRoute(router, endpoints.createOrder, handler)`),
+  so path, method and input checks cannot drift; a contract test calls every endpoint and checks the
+  real answer against `response`.
+- **Frontend**: RTK Query endpoints are built from the same description (URL via `fillPath`); in
+  development each answer is checked against `response` and a mismatch is logged.
+- Errors (400, 404, 500) are always `{ message }` (`errorResponseSchema`).
+
+Adding or changing an endpoint: describe it here first (minor version for a new endpoint or optional
+field, major for anything that breaks existing callers), then implement it in the backend, then use it in
+the frontend.
 
 ### Two rules worth knowing
 

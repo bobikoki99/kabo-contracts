@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { MESSAGES, optionalText, econtId, isEmail, isPhoneNumber } from './common.js';
+import { MESSAGES, optionalText, econtId, isEmail, isPhoneNumber, mongoId } from './common.js';
 import { cartItemsSchema } from './cart.js';
-import { DELIVERY_METHOD, PAYMENT_METHOD, INVOICE_TYPE } from './enums.js';
+import { DELIVERY_METHOD, PAYMENT_METHOD, INVOICE_TYPE, CURRENCY } from './enums.js';
 
 // The fields are deliberately loose (missing → '') and every "required" rule lives in
 // checkCheckout below. Zod skips an object's refinements when any field fails, so this
@@ -122,3 +122,70 @@ export const createOrderSchema = checkoutFields
 
 /** @typedef {import('zod').infer<typeof checkoutSchema>} Checkout */
 /** @typedef {import('zod').infer<typeof createOrderSchema>} CreateOrder */
+
+// ---- What the backend returns for an order (POST /orders, GET /orders/:orderId) ----
+
+const orderLineSchema = z.object({
+    _id: mongoId,
+    name: z.string(),
+    price: z.number().nonnegative(),   // price paid, EUR
+    quantity: z.number().int().positive()
+});
+
+const orderInvoiceSchema = z.object({
+    invoiceType: z.enum(Object.values(INVOICE_TYPE)),
+    city: z.number().int(),
+    cityName: z.string(),
+    postCode: z.string(),
+    countryCode: z.string(),
+    countryName: z.string(),
+    address: z.string(),
+    // natural person
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    nationalIdentityNumber: z.string().optional(),
+    // legal entity
+    companyName: z.string().optional(),
+    materialResponsiblePerson: z.string().optional(),
+    companyIdentificationNumber: z.string().optional(),
+    isVATRegistered: z.boolean().optional(),
+    vatNumber: z.string().optional()
+});
+
+export const orderSchema = z.object({
+    _id: mongoId,
+    orderNumber: z.number().int().positive(),
+    firstName: z.string(),
+    lastName: z.string(),
+    phoneNumber: z.string(),
+    email: z.string(),
+    city: z.number().int(),
+    cityName: z.string(),
+    regionName: z.string().optional(),
+    postCode: z.string(),
+    countryCode: z.string(),
+    countryName: z.string(),
+    deliveryMethod: z.enum(Object.values(DELIVERY_METHOD)),
+    // office delivery
+    office: z.number().int().nullable().optional(),
+    officeCode: z.string().optional(),
+    officeName: z.string().optional(),
+    officeAddress: z.string().optional(),
+    // address delivery
+    address: z.string().optional(),
+    paymentMethod: z.enum(Object.values(PAYMENT_METHOD)),
+    isInvoice: z.boolean(),
+    invoiceDetails: orderInvoiceSchema.nullable(),
+    products: z.array(orderLineSchema).min(1),
+    productsPrice: z.number().nonnegative(),
+    deliveryPrice: z.number().nonnegative(),
+    totalPrice: z.number().nonnegative(),
+    currency: z.literal(CURRENCY),
+    isDelivered: z.boolean(),
+    isPaid: z.boolean(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    termsAcceptedAt: z.string()
+});
+
+/** @typedef {import('zod').infer<typeof orderSchema>} Order */

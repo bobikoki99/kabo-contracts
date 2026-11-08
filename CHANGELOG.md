@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.0 – 2026-11-08
+
+- `endpoints`: every backend endpoint described once – method, path, `params` / `query` / `body`
+  schemas and the `response` schema. The backend registers its routes from it and tests its real
+  answers against `response`; the frontend builds its RTK Query endpoints from it.
+- Response schemas: `orderSchema`, `citySchema`, `econtOfficeSchema`, `deliveryPricesSchema`,
+  `errorResponseSchema`.
+- `fillPath(path, params)` turns `/products/:productId` into a URL.
+- `getProducts` takes an optional `category` query; `searchCities` limits `searchTerm` to 1–50 characters.
+
 ## 1.0.3 – 2026-11-08
 
 - Published on npmjs.com as `kabo-contracts` (install as `@kabo/contracts` via `npm:kabo-contracts@^1.0.3`); a GitHub Action publishes every version tag. No schema changes.
