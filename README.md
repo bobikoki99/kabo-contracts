@@ -72,10 +72,12 @@ Editor types without TypeScript (VS Code reads JSDoc):
 
 ## Change a rule
 
-1. Edit the schema and its test in `test/`; `npm test`.
-2. Bump `version` in `package.json`, add a line to `CHANGELOG.md`, commit, `git tag vX.Y.Z`, push with tags.
-   The **Publish to npm** GitHub Action tests and publishes it (the tag must equal the version).
-3. `npm update @kabo/contracts` in the **backend first**, then the frontend (for a major version,
+1. In a branch: edit the schema and its test in `test/`; `npm test`.
+2. Bump `version` in `package.json` (see the table) and add a line to `CHANGELOG.md`; open a pull request.
+   GitHub runs the tests on the PR.
+3. Merge into `main`. The **Test and publish** action publishes the new version to npm and tags the
+   commit `vX.Y.Z`. A merge without a version bump (e.g. README only) publishes nothing.
+4. `npm update @kabo/contracts` in the **backend first**, then the frontend (for a major version,
    change the range in `package.json`, e.g. `npm:kabo-contracts@^2.0.0`).
 
 | Change | Version | Example |
@@ -86,7 +88,7 @@ Editor types without TypeScript (VS Code reads JSDoc):
 
 ## Publishing setup (once)
 
-Releases are published by `.github/workflows/publish.yml` with npm **trusted publishing**: no token,
+Releases are published from `main` by `.github/workflows/publish.yml` with npm **trusted publishing**: no token,
 nothing expires. Configured on npmjs.com → kabo-contracts → Settings → Trusted Publisher →
 GitHub Actions (`bobikoki99` / `kabo-contracts` / `publish.yml`), with publishing access set to
 "Require two-factor authentication and disallow tokens". Nobody needs to log in to npm locally.

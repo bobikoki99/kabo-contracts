@@ -1,18 +1,26 @@
-# Publishes kabo-contracts to npmjs.com when a version tag (v1.2.3) is pushed.
-# Authentication: npm trusted publishing (OIDC, no token) once it is set up on npmjs.com for
-# bobikoki99/kabo-contracts + publish.yml. Until then the NPM_TOKEN secret is used (first publish only).
-name: Publish to npm
+# Tests every pull request. On every push/merge to main: if package.json has a version that is not
+# on npm yet, publishes it to npmjs.com and tags the commit vX.Y.Z. Same version → nothing published.
+#
+# Authentication: npm trusted publishing (OIDC, no token), set up on npmjs.com for
+# bobikoki99/kabo-contracts + publish.yml. The NPM_TOKEN secret is only a fallback; delete it once
+# trusted publishing works.
+name: Test and publish
 
 on:
+  pull_request:
   push:
-    tags: ['v*']
+    branches: [main]
 
 permissions:
-  contents: read
-  id-token: write   # trusted publishing + provenance (the npm page links the package to this commit)
+  contents: write   # push the vX.Y.Z tag
+  id-token: write   # trusted publishing + provenance
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  publish:
+  test-and-publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,13 +31,34 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - run: npm install -g npm@latest   # trusted publishing needs npm 11.5.1 or newer
-
       - run: npm ci
       - run: npm test
 
-      - name: Tag must match package.json version
-        run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+      - name: Is this version new?
+        id: version
+        if: github.event_name == 'push'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "kabo-contracts@$VERSION" version >/dev/null 2>&1; then
+            echo "new=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::kabo-contracts@$VERSION is already on npm – bump version in package.json to release"
+          else
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          fi
 
-      - run: npm publish --access public
+      - name: Publish
+        if: steps.version.outputs.new == 'true'
+        run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}   # ignored once trusted publishing works; delete the secret then
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Tag the release
+        if: steps.version.outputs.new == 'true'
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
+            echo "::notice::$TAG already exists"
+          else
+            git tag "$TAG" && git push origin "$TAG"
+          fi
