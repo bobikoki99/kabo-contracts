@@ -2,8 +2,7 @@
 # on npm yet, publishes it to npmjs.com and tags the commit vX.Y.Z. Same version → nothing published.
 #
 # Authentication: npm trusted publishing (OIDC, no token), set up on npmjs.com for
-# bobikoki99/kabo-contracts + publish.yml. The NPM_TOKEN secret is only a fallback; delete it once
-# trusted publishing works.
+# bobikoki99/kabo-contracts + publish.yml with permission "publish".
 name: Test and publish
 
 on:
@@ -50,8 +49,6 @@ jobs:
       - name: Publish
         if: steps.version.outputs.new == 'true'
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Tag the release
         if: steps.version.outputs.new == 'true'

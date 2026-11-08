@@ -27,14 +27,14 @@ Published on npmjs.com as [`kabo-contracts`](https://www.npmjs.com/package/kabo-
 Install it under the name the code imports, `@kabo/contracts`, with an npm alias:
 
 ```bash
-npm install @kabo/contracts@npm:kabo-contracts@^1.0.3
+npm install @kabo/contracts@npm:kabo-contracts@^1.1.0
 ```
 
 ```json
-"dependencies": { "@kabo/contracts": "npm:kabo-contracts@^1.0.3" }
+"dependencies": { "@kabo/contracts": "npm:kabo-contracts@^1.1.0" }
 ```
 
-`^1.0.3` takes new patch and minor versions on the next `npm update`; a major version (breaking
+`^1.1.0` takes new patch and minor versions on the next `npm update`; a major version (breaking
 change) needs an explicit bump. Plain ES modules, no build step. The backend (CommonJS) can
 `require()` it on Node ≥ 20.19.
 
@@ -113,11 +113,12 @@ the frontend.
 
 Releases are published from `main` by `.github/workflows/publish.yml` with npm **trusted publishing**: no token,
 nothing expires. Configured on npmjs.com → kabo-contracts → Settings → Trusted Publisher →
-GitHub Actions (`bobikoki99` / `kabo-contracts` / `publish.yml`), with publishing access set to
-"Require two-factor authentication and disallow tokens". Nobody needs to log in to npm locally.
+GitHub Actions (`bobikoki99` / `kabo-contracts` / `publish.yml`) with permission **publish** (not
+"stage publish", which only stages releases and makes `npm publish` fail with "OIDC permission
+denied"). Nobody needs to log in to npm locally.
 
-The very first version was published with a 7-day token in the `NPM_TOKEN` secret, because trusted
-publishing can only be enabled for a package that already exists; that secret is deleted afterwards.
+The very first version (1.0.3) was published by hand, because trusted publishing can only be enabled
+for a package that already exists.
 
 ## Develop
 
