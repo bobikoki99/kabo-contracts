@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { MESSAGES, optionalText, econtId, isEmail, isPhoneNumber, mongoId } from './common.js';
 import { cartItemsSchema } from './cart.js';
-import { DELIVERY_METHOD, PAYMENT_METHOD, INVOICE_TYPE, CURRENCY } from './enums.js';
+import { DELIVERY_METHOD, PAYMENT_METHOD, INVOICE_TYPE, CURRENCY, ORDER_STATUS } from './enums.js';
 
 // The fields are deliberately loose (missing → '') and every "required" rule lives in
 // checkCheckout below. Zod skips an object's refinements when any field fails, so this
@@ -183,9 +183,20 @@ export const orderSchema = z.object({
     currency: z.literal(CURRENCY),
     isDelivered: z.boolean(),
     isPaid: z.boolean(),
+    status: z.enum(Object.values(ORDER_STATUS)).default(ORDER_STATUS.NEW),
+    trackingNumber: z.string().default(''),   // Econt shipment number
+    adminNote: z.string().default(''),        // only seen in the admin panel
     createdAt: z.string(),
     updatedAt: z.string(),
     termsAcceptedAt: z.string()
 });
 
 /** @typedef {import('zod').infer<typeof orderSchema>} Order */
+
+// PATCH /admin/orders/:orderId – what the admin can change on an order
+export const orderUpdateSchema = z.object({
+    status: z.enum(Object.values(ORDER_STATUS), { error: MESSAGES.INVALID_CHOICE }),
+    isPaid: z.boolean(),
+    trackingNumber: optionalText(50),
+    adminNote: optionalText(2000)
+});

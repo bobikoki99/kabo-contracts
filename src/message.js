@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { MESSAGES, requiredText, requiredEmail, optionalText, optionalPhoneNumber } from './common.js';
 import { MESSAGE_TYPE } from './enums.js';
+import { mongoId } from './common.js';
 
 const contactFields = {
     name: requiredText(100),
@@ -26,6 +27,20 @@ export const createMessageSchema = z.preprocess(
         wholesaleMessageSchema.extend({ type: z.literal(MESSAGE_TYPE.WHOLESALE) })
     ], { error: MESSAGES.INVALID_CHOICE })
 );
+
+// A stored message as the admin panel sees it
+export const messageSchema = z.object({
+    _id: mongoId,
+    type: z.enum(Object.values(MESSAGE_TYPE)),
+    name: z.string(),
+    email: z.string(),
+    phoneNumber: z.string().default(''),
+    company: z.string().default(''),
+    city: z.string().default(''),
+    message: z.string(),
+    isRead: z.boolean(),   // "handled" in the admin panel
+    createdAt: z.string()
+});
 
 /** @typedef {import('zod').infer<typeof contactMessageSchema>} ContactMessage */
 /** @typedef {import('zod').infer<typeof wholesaleMessageSchema>} WholesaleMessage */

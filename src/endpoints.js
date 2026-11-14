@@ -4,12 +4,39 @@ import { mongoId, MESSAGES } from './common.js';
 import { PRODUCT_CATEGORY } from './enums.js';
 import { productSchema, productInputSchema } from './product.js';
 import { articleSchema, articleInputSchema, SLUG_REGEX } from './article.js';
+import { resellerSchema, resellerInputSchema, reviewSchema, reviewInputSchema, questionSchema, questionInputSchema, siteContentSchema } from './content.js';
 import { loginSchema, adminSchema, imageUploadSchema } from './admin.js';
-import { SITE } from './enums.js';
-import { createOrderSchema, orderSchema } from './order.js';
+import { SITE, MESSAGE_TYPE } from './enums.js';
+import { createOrderSchema, orderSchema, orderUpdateSchema } from './order.js';
 import { deliveryPriceRequestSchema } from './cart.js';
-import { createMessageSchema } from './message.js';
+import { createMessageSchema, messageSchema } from './message.js';
 import { citySchema, econtOfficeSchema, deliveryPricesSchema } from './econt.js';
+
+// Admin create / update / delete of one content list, e.g. adminCreateReview, PUT /admin/reviews/:itemId
+const adminContentEndpoints = (name, path, inputSchema, itemSchema) => ({
+    [`adminCreate${name}`]: {
+        method: 'POST',
+        path: `/admin/${path}`,
+        auth: 'admin',
+        body: inputSchema,
+        response: z.object({ item: itemSchema })
+    },
+    [`adminUpdate${name}`]: {
+        method: 'PUT',
+        path: `/admin/${path}/:itemId`,
+        auth: 'admin',
+        params: z.object({ itemId: mongoId }),
+        body: inputSchema,
+        response: z.object({ item: itemSchema })
+    },
+    [`adminDelete${name}`]: {
+        method: 'DELETE',
+        path: `/admin/${path}/:itemId`,
+        auth: 'admin',
+        params: z.object({ itemId: mongoId }),
+        response: z.object({ success: z.literal(true) })
+    }
+});
 
 // Every HTTP endpoint of kabobee-backend, described once:
 //   method + path   – Express path syntax; `fillPath` turns it into a URL on the client
@@ -98,6 +125,14 @@ export const endpoints = Object.freeze({
         response: z.object({ article: articleSchema.nullable() })   // null: no published article with that slug
     },
 
+    // Shops, reviews and FAQ of one storefront
+    getSiteContent: {
+        method: 'GET',
+        path: '/content',
+        query: z.object({ site: z.enum(Object.values(SITE), { error: MESSAGES.INVALID_CHOICE }) }),
+        response: siteContentSchema
+    },
+
     // Admin panel (admin.kabo.bg)
     adminLogin: {
         method: 'POST',
@@ -172,7 +207,48 @@ export const endpoints = Object.freeze({
         auth: 'admin',
         body: imageUploadSchema,
         response: z.object({ url: z.string() })
-    }
+    },
+    // Orders, newest first
+    adminGetOrders: {
+        method: 'GET',
+        path: '/admin/orders',
+        auth: 'admin',
+        response: z.object({ orders: z.array(orderSchema) })
+    },
+    adminUpdateOrder: {
+        method: 'PATCH',
+        path: '/admin/orders/:orderId',
+        auth: 'admin',
+        params: z.object({ orderId: mongoId }),
+        body: orderUpdateSchema,
+        response: z.object({ order: orderSchema })
+    },
+    // Contact and wholesale (firm) messages, newest first
+    adminGetMessages: {
+        method: 'GET',
+        path: '/admin/messages',
+        auth: 'admin',
+        query: z.object({ type: z.enum(Object.values(MESSAGE_TYPE), { error: MESSAGES.INVALID_CHOICE }) }),
+        response: z.object({ messages: z.array(messageSchema) })
+    },
+    adminUpdateMessage: {
+        method: 'PATCH',
+        path: '/admin/messages/:messageId',
+        auth: 'admin',
+        params: z.object({ messageId: mongoId }),
+        body: z.object({ isRead: z.boolean() }),
+        response: z.object({ message: messageSchema })
+    },
+    adminDeleteMessage: {
+        method: 'DELETE',
+        path: '/admin/messages/:messageId',
+        auth: 'admin',
+        params: z.object({ messageId: mongoId }),
+        response: z.object({ success: z.literal(true) })
+    },
+    ...adminContentEndpoints('Reseller', 'resellers', resellerInputSchema, resellerSchema),
+    ...adminContentEndpoints('Review', 'reviews', reviewInputSchema, reviewSchema),
+    ...adminContentEndpoints('Question', 'questions', questionInputSchema, questionSchema)
 });
 
 export const errorResponseSchema = z.object({ message: z.string() });

@@ -32,6 +32,15 @@ export const PRODUCT_AUDIENCE = Object.freeze({
     PRO: 'pro'
 });
 
+// Where an order is (orders.status), changed in the admin panel. Older orders have none: treat as NEW.
+export const ORDER_STATUS = Object.freeze({
+    NEW: 'new',             // just placed
+    CONFIRMED: 'confirmed', // called / confirmed with the customer
+    SENT: 'sent',           // handed to Econt
+    DELIVERED: 'delivered', // received and paid on delivery
+    CANCELLED: 'cancelled'
+});
+
 export const CURRENCY = 'EUR';
 
 export const MAX_ITEM_QUANTITY = 99;
