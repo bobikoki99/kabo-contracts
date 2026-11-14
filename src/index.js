@@ -6,5 +6,6 @@ export * from './message.js';
 export * from './product.js';
 export * from './econt.js';
 export * from './article.js';
+export * from './content.js';
 export * from './admin.js';
 export * from './endpoints.js';

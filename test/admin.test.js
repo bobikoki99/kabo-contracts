@@ -38,3 +38,32 @@ describe('admin', () => {
         }
     });
 });
+
+describe('site content', () => {
+    it('fills defaults for a minimal shop, review and question', async () => {
+        const { resellerInputSchema, reviewInputSchema, questionInputSchema } = await import('../src/index.js');
+        expect(resellerInputSchema.parse({ site: 'honey', name: ' Пчелица ', city: 'Варна' }))
+            .toMatchObject({ name: 'Пчелица', address: '', phone: '', website: '', models: [], sortOrder: 0 });
+        expect(reviewInputSchema.parse({ site: 'equipment', name: 'Иван', text: 'Добър' }).detail).toBe('');
+        expect(questionInputSchema.safeParse({ site: 'honey', question: 'Защо?', answer: '' }).success).toBe(false);
+    });
+
+    it('registers create/update/delete for every list, admin only', async () => {
+        const { endpoints } = await import('../src/index.js');
+        for (const name of ['Reseller', 'Review', 'Question']) {
+            for (const action of ['Create', 'Update', 'Delete']) {
+                expect(endpoints[`admin${action}${name}`]?.auth, `admin${action}${name}`).toBe('admin');
+            }
+        }
+        expect(endpoints.getSiteContent.auth).toBeUndefined();
+    });
+});
+
+describe('orders and messages in the admin', () => {
+    it('reads older orders without a status as new, and checks status changes', async () => {
+        const { orderUpdateSchema, ORDER_STATUS } = await import('../src/index.js');
+        expect(orderUpdateSchema.parse({ status: 'sent', isPaid: false, trackingNumber: ' 123 ' }))
+            .toEqual({ status: ORDER_STATUS.SENT, isPaid: false, trackingNumber: '123', adminNote: '' });
+        expect(orderUpdateSchema.safeParse({ status: 'lost', isPaid: false }).success).toBe(false);
+    });
+});

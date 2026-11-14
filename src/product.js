@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
-import { mongoId } from './common.js';
+import { mongoId, MESSAGES } from './common.js';
 import { PRODUCT_CATEGORY, PRODUCT_AUDIENCE } from './enums.js';
 
 // A product as stored by the seed script (kabobee-backend/scripts/seedPlaceholderModels.js).
 // Sublimators use audience, warrantyMonths and inTheBox; honey products leave them out.
 // `specs` keys differ per category (hives, powerSource… / honeyType, netWeight…), so they stay free-form.
 export const productInputSchema = z.object({
-    modelKey: z.string().min(1),
+    modelKey: z.string().min(1, { error: MESSAGES.REQUIRED }),
     category: z.enum(Object.values(PRODUCT_CATEGORY)),
-    name: z.string().min(1),
+    name: z.string().min(1, { error: MESSAGES.REQUIRED }),
     tagline: z.string().default(''),
     price: z.number({ error: 'Въведете цена.' }).positive({ error: 'Цената трябва да е положително число.' }),   // EUR incl. VAT
     weight: z.number({ error: 'Въведете тегло.' }).positive({ error: 'Теглото трябва да е положително число.' }),   // kg incl. packaging, used for Econt prices
