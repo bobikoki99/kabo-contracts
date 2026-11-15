@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { mongoId, MESSAGES } from './common.js';
+import { mongoId, MESSAGES, wholeNumber } from './common.js';
 import { PRODUCT_CATEGORY, PRODUCT_AUDIENCE } from './enums.js';
 
 // A product as stored by the seed script (kabobee-backend/scripts/seedPlaceholderModels.js).
@@ -22,7 +22,7 @@ export const productInputSchema = z.object({
     imageUrls: z.array(z.string()).default([]),
     videoUrl: z.string().default(''),
     audience: z.enum(Object.values(PRODUCT_AUDIENCE)).optional(),
-    warrantyMonths: z.number().int().positive().optional(),
+    warrantyMonths: wholeNumber(1).optional(),
     inTheBox: z.array(z.string()).optional(),
     isPlaceholder: z.boolean().optional()
 });

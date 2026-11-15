@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-import { mongoId, optionalText, requiredText } from './common.js';
+import { mongoId, optionalText, requiredText, wholeNumber } from './common.js';
 import { SITE } from './enums.js';
 
 // Short lists the admin edits for each storefront: shops, customer reviews and FAQ.
 // Shown in sortOrder (then oldest first).
 const base = {
     site: z.enum(Object.values(SITE)),
-    sortOrder: z.number().int().min(0).max(9999).default(0)
+    sortOrder: wholeNumber(0, 9999).default(0)
 };
 
 // "Магазини" – a shop that sells our products
