@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { articleInputSchema, loginSchema, imageUploadSchema, endpoints, MAX_IMAGE_BYTES } from '../src/index.js';
+import { articleInputSchema, loginSchema, imageUploadSchema, endpoints, MAX_IMAGE_BYTES, MESSAGES, productInputSchema, resellerInputSchema } from '../src/index.js';
 
 describe('articles', () => {
     it('fills defaults and accepts a minimal article', () => {
@@ -65,5 +65,36 @@ describe('orders and messages in the admin', () => {
         expect(orderUpdateSchema.parse({ status: 'sent', isPaid: false, trackingNumber: ' 123 ' }))
             .toEqual({ status: ORDER_STATUS.SENT, isPaid: false, trackingNumber: '123', adminNote: '' });
         expect(orderUpdateSchema.safeParse({ status: 'lost', isPaid: false }).success).toBe(false);
+    });
+});
+
+describe('Bulgarian messages for numbers typed in the admin panel', () => {
+    const messageFor = (schema, data, field) => schema.safeParse(data).error?.issues.find(issue => issue.path[0] === field)?.message;
+    const article = { slug: 'test', site: 'equipment', title: 'Тест' };
+    const product = { modelKey: 'gas', category: 'sublimator', name: 'Kabo Gas', price: 100, weight: 1.5, sortOrder: 1 };
+    const shop = { site: 'equipment', name: 'Магазин', city: 'София' };
+
+    it('warranty months: whole and at least 1, still optional', () => {
+        expect(messageFor(productInputSchema, { ...product, warrantyMonths: 1.5 }, 'warrantyMonths')).toBe(MESSAGES.WHOLE_NUMBER);
+        expect(messageFor(productInputSchema, { ...product, warrantyMonths: 0 }, 'warrantyMonths')).toBe('Въведете число не по-малко от 1.');
+        expect(productInputSchema.safeParse({ ...product, warrantyMonths: 24 }).success).toBe(true);
+        expect(productInputSchema.safeParse(product).success).toBe(true);
+    });
+
+    it('minutes to read: whole, from 1 to 120, 3 by default', () => {
+        expect(messageFor(articleInputSchema, { ...article, readMinutes: 2.5 }, 'readMinutes')).toBe(MESSAGES.WHOLE_NUMBER);
+        expect(messageFor(articleInputSchema, { ...article, readMinutes: 121 }, 'readMinutes')).toBe('Въведете число от 1 до 120.');
+        expect(articleInputSchema.parse(article).readMinutes).toBe(3);
+    });
+
+    it('excerpt: up to 500 characters', () => {
+        expect(messageFor(articleInputSchema, { ...article, excerpt: 'x'.repeat(501) }, 'excerpt')).toBe(MESSAGES.TOO_LONG);
+        expect(articleInputSchema.parse({ ...article, excerpt: ' кратко ' }).excerpt).toBe('кратко');
+    });
+
+    it('position of a shop, review or question: whole, from 0 to 9999', () => {
+        expect(messageFor(resellerInputSchema, { ...shop, sortOrder: -1 }, 'sortOrder')).toBe('Въведете число от 0 до 9999.');
+        expect(messageFor(resellerInputSchema, { ...shop, sortOrder: 1.2 }, 'sortOrder')).toBe(MESSAGES.WHOLE_NUMBER);
+        expect(resellerInputSchema.parse(shop).sortOrder).toBe(0);
     });
 });

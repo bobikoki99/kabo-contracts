@@ -10,7 +10,8 @@ export const MESSAGES = Object.freeze({
     INVALID_CHOICE: 'Изберете една от възможностите.',
     CART_EMPTY: 'Количката е празна.',
     INVALID_CART_ITEM: 'Невалиден продукт в количката.',
-    INVALID_ID: 'Невалиден идентификатор.'
+    INVALID_ID: 'Невалиден идентификатор.',
+    WHOLE_NUMBER: 'Въведете цяло число.'
 });
 
 export const MAX_TEXT_LENGTH = 300;
@@ -26,6 +27,13 @@ export const MONGO_ID_REGEX = /^[0-9a-f]{24}$/i;
 
 export const isEmail = (value) => EMAIL_REGEX.test(value);
 export const isPhoneNumber = (value) => PHONE_NUMBER_REGEX.test(value.replace(/[\s\-()]/g, ''));
+
+// Whole number from min to max (max optional), with a Bulgarian message for every way it can be wrong
+export const wholeNumber = (min, max) => {
+    const range = { error: max === undefined ? `Въведете число не по-малко от ${min}.` : `Въведете число от ${min} до ${max}.` };
+    const number = z.number({ error: MESSAGES.WHOLE_NUMBER }).int({ error: MESSAGES.WHOLE_NUMBER }).min(min, range);
+    return max === undefined ? number : number.max(max, range);
+};
 
 // Trimmed text that may be empty; missing becomes ''
 export const optionalText = (max = MAX_TEXT_LENGTH) => z.string().trim().max(max, MESSAGES.TOO_LONG).default('');
