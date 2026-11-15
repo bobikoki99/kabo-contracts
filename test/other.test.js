@@ -61,3 +61,19 @@ describe('products', () => {
         expect(productInputSchema.safeParse({ ...honey, category: 'shoes' }).success).toBe(false);
     });
 });
+
+describe('product categories', () => {
+    test('has parts and other equipment next to sublimators and honey, each sold by a site', async () => {
+        const { PRODUCT_CATEGORY, SITE, SITE_OF_CATEGORY, productInputSchema, endpoints } = await import('../src/index.js');
+        expect(Object.values(PRODUCT_CATEGORY).sort()).toEqual(['honey', 'other', 'part', 'sublimator']);
+        for (const category of Object.values(PRODUCT_CATEGORY)) {
+            expect(Object.values(SITE)).toContain(SITE_OF_CATEGORY[category]);
+            expect(endpoints.getProducts.query.safeParse({ category }).success).toBe(true);
+        }
+        const part = productInputSchema.parse({
+            modelKey: 'nozzle', category: 'part', name: 'Дюза', price: 8, weight: 0.1, sortOrder: 1, fitsModels: ['gas', 'gas-pro']
+        });
+        expect(part.fitsModels).toEqual(['gas', 'gas-pro']);
+        expect(productInputSchema.safeParse({ ...part, category: 'spare' }).success).toBe(false);
+    });
+});
