@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { MESSAGES, optionalText, econtId, isEmail, isPhoneNumber, mongoId } from './common.js';
+import { MESSAGES, optionalText, econtId, isEmail, isPhoneNumber, mongoId, sourceSite } from './common.js';
 import { cartItemsSchema } from './cart.js';
 import { DELIVERY_METHOD, PAYMENT_METHOD, INVOICE_TYPE, CURRENCY, ORDER_STATUS } from './enums.js';
 
@@ -117,7 +117,7 @@ export const checkoutSchema = checkoutFields.superRefine(checkCheckout);
 
 // POST /orders: the checkout form plus the cart lines
 export const createOrderSchema = checkoutFields
-    .extend({ products: cartItemsSchema })
+    .extend({ products: cartItemsSchema, site: sourceSite })
     .superRefine(checkCheckout);
 
 /** @typedef {import('zod').infer<typeof checkoutSchema>} Checkout */
@@ -155,6 +155,7 @@ const orderInvoiceSchema = z.object({
 export const orderSchema = z.object({
     _id: mongoId,
     orderNumber: z.number().int().positive(),
+    site: sourceSite,   // the storefront it was placed on; missing on orders before 1.5.0
     firstName: z.string(),
     lastName: z.string(),
     phoneNumber: z.string(),

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { MESSAGES, requiredText, requiredEmail, optionalText, optionalPhoneNumber } from './common.js';
+import { MESSAGES, requiredText, requiredEmail, optionalText, optionalPhoneNumber, sourceSite } from './common.js';
 import { MESSAGE_TYPE } from './enums.js';
 import { mongoId } from './common.js';
 
@@ -23,8 +23,8 @@ export const wholesaleMessageSchema = z.object({ ...contactFields, company: requ
 export const createMessageSchema = z.preprocess(
     body => (body && typeof body === 'object' && body.type === undefined ? { ...body, type: MESSAGE_TYPE.CONTACT } : body),
     z.discriminatedUnion('type', [
-        contactMessageSchema.extend({ type: z.literal(MESSAGE_TYPE.CONTACT) }),
-        wholesaleMessageSchema.extend({ type: z.literal(MESSAGE_TYPE.WHOLESALE) })
+        contactMessageSchema.extend({ type: z.literal(MESSAGE_TYPE.CONTACT), site: sourceSite }),
+        wholesaleMessageSchema.extend({ type: z.literal(MESSAGE_TYPE.WHOLESALE), site: sourceSite })
     ], { error: MESSAGES.INVALID_CHOICE })
 );
 
@@ -32,6 +32,7 @@ export const createMessageSchema = z.preprocess(
 export const messageSchema = z.object({
     _id: mongoId,
     type: z.enum(Object.values(MESSAGE_TYPE)),
+    site: sourceSite,   // missing on messages sent before 1.5.0
     name: z.string(),
     email: z.string(),
     phoneNumber: z.string().default(''),
