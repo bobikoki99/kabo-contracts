@@ -20,9 +20,12 @@ export const MESSAGE_TYPE = Object.freeze({
     WHOLESALE: 'wholesale'   // for-resellers page
 });
 
-// Which storefront sells a product (products.category)
+// What a product is (products.category). Each storefront asks for its own categories:
+// Kabo Пчелар shows sublimators on "Модели" (lineup + comparison table) and parts/other on "Части и оборудване".
 export const PRODUCT_CATEGORY = Object.freeze({
     SUBLIMATOR: 'sublimator',
+    PART: 'part',     // spare parts and accessories, can name the models they fit (fitsModels)
+    OTHER: 'other',   // other equipment, e.g. a fruit dryer
     HONEY: 'honey'
 });
 
@@ -49,6 +52,14 @@ export const MAX_ITEM_QUANTITY = 99;
 export const SITE = Object.freeze({
     EQUIPMENT: 'equipment',
     HONEY: 'honey'
+});
+
+// The storefront that sells each product category
+export const SITE_OF_CATEGORY = Object.freeze({
+    [PRODUCT_CATEGORY.SUBLIMATOR]: SITE.EQUIPMENT,
+    [PRODUCT_CATEGORY.PART]: SITE.EQUIPMENT,
+    [PRODUCT_CATEGORY.OTHER]: SITE.EQUIPMENT,
+    [PRODUCT_CATEGORY.HONEY]: SITE.HONEY
 });
 
 // Image types the admin can upload (POST /admin/images)

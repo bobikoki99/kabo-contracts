@@ -3,9 +3,10 @@ import { z } from 'zod';
 import { mongoId, MESSAGES, wholeNumber } from './common.js';
 import { PRODUCT_CATEGORY, PRODUCT_AUDIENCE } from './enums.js';
 
-// A product as stored by the seed script (kabobee-backend/scripts/seedPlaceholderModels.js).
-// Sublimators use audience, warrantyMonths and inTheBox; honey products leave them out.
-// `specs` keys differ per category (hives, powerSource… / honeyType, netWeight…), so they stay free-form.
+// A product as edited in the admin panel.
+// Sublimators use audience; sublimators and other equipment use warrantyMonths and inTheBox;
+// parts use fitsModels (modelKeys of the sublimators they fit). Honey products use none of these.
+// `specs` keys differ per category (hives, powerSource… / material… / honeyType, netWeight…), so they stay free-form.
 export const productInputSchema = z.object({
     modelKey: z.string().min(1, { error: MESSAGES.REQUIRED }),
     category: z.enum(Object.values(PRODUCT_CATEGORY)),
@@ -24,6 +25,7 @@ export const productInputSchema = z.object({
     audience: z.enum(Object.values(PRODUCT_AUDIENCE)).optional(),
     warrantyMonths: wholeNumber(1).optional(),
     inTheBox: z.array(z.string()).optional(),
+    fitsModels: z.array(z.string()).optional(),
     isPlaceholder: z.boolean().optional()
 });
 
