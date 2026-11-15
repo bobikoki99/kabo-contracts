@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { SITE } from './enums.js';
+
 // Error messages are shown to customers next to the form fields, so they are in Bulgarian
 export const MESSAGES = Object.freeze({
     REQUIRED: 'Това поле е задължително.',
@@ -59,3 +61,6 @@ export const econtId = z
     .transform(value => (Number(value) > 0 ? Number(value) : null));
 
 export const mongoId = z.string().regex(MONGO_ID_REGEX, MESSAGES.INVALID_ID);
+
+// Which storefront a message or order came from. Optional: older records (and an old cached page) have none.
+export const sourceSite = z.enum(Object.values(SITE), { error: MESSAGES.INVALID_CHOICE }).optional();

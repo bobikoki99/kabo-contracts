@@ -143,3 +143,13 @@ describe('createOrderSchema', () => {
         expect(errorsOf(createOrderSchema, { ...validCheckout, email: 'nope', products })).toEqual({ email: MESSAGES.INVALID_EMAIL });
     });
 });
+
+describe('site of an order', () => {
+    const products = [{ _id: '65d2070cf91d4ab7cade1750', quantity: 1 }];
+
+    test('is stored when sent, optional for older pages, and must be a known site', () => {
+        expect(createOrderSchema.parse({ ...validCheckout, products, site: 'honey' }).site).toBe('honey');
+        expect(createOrderSchema.parse({ ...validCheckout, products }).site).toBeUndefined();
+        expect(errorsOf(createOrderSchema, { ...validCheckout, products, site: 'landing' })).toEqual({ site: MESSAGES.INVALID_CHOICE });
+    });
+});

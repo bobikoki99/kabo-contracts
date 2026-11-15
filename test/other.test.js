@@ -77,3 +77,12 @@ describe('product categories', () => {
         expect(productInputSchema.safeParse({ ...part, category: 'spare' }).success).toBe(false);
     });
 });
+
+describe('site of a message', () => {
+    test('POST /messages keeps the site it came from; older pages may leave it out', () => {
+        expect(createMessageSchema.parse({ ...message, site: 'honey' }).site).toBe('honey');
+        expect(createMessageSchema.parse({ ...message, type: MESSAGE_TYPE.WHOLESALE, company: 'Магазин', site: 'equipment' }).site).toBe('equipment');
+        expect(createMessageSchema.parse(message).site).toBeUndefined();
+        expect(createMessageSchema.safeParse({ ...message, site: 'landing' }).success).toBe(false);
+    });
+});
